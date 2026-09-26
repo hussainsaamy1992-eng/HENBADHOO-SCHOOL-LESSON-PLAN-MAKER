@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>VILUFUSHEE SCHOOL - Lesson Plan Portal</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #f3f4f6;
+      --text: #1f2937;
+      --active-tab: #2563eb;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--secondary);
+      color: var(--text);
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .tab-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .tab-btn {
+      background: #cbd5e1; color: var(--text); border: none; padding: 12px 24px;
+      font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .tab-btn:hover:not(.active) { background: #94a3b8; }
+
+    .header {
+      text-align: center; background: var(--primary); color: white;
+      padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
+    .header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+    
+    .control-panel {
+      background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
+    select, input[type="text"], input[type="date"] {
+      width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+    }
+    
+    .btn {
+      background: var(--primary); color: white; border: none;
+      padding: 10px 15px; border-radius: 4px; cursor: pointer;
+      font-weight: bold; width: 100%; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+    
+    #status { margin-top: 15px; font-weight: bold; text-align: center; }
+    .success { color: #16a34a; }
+    .error { color: #dc2626; }
+    
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .terms-wrapper { display: flex; gap: 20px; }
+    .term-col { flex: 1; }
+    .term-col h2 { text-align: center; color: var(--primary); border-bottom: 2px solid #cbd5e1; padding-bottom: 10px; }
+    
+    .week-details { margin-bottom: 10px; background: white; border-radius: 6px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .week-details summary { display: flex; justify-content: space-between; align-items: center; padding: 12px; font-weight: bold; cursor: pointer; background: #f8fafc; border-radius: 6px; list-style: none; }
+    .week-details summary::-webkit-details-marker { display: none; }
+    .week-content { padding: 15px; }
+    
+    .period-card { border: 1px dashed #94a3b8; padding: 15px; margin-bottom: 15px; border-radius: 6px; background: #fdfdfd; }
+    .outcome-block { background: #eff6ff; padding: 10px; border-left: 4px solid #3b82f6; margin-bottom: 10px; border-radius: 4px; }
+    .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
+    
+    .export-panel { background: white; padding: 20px; border-radius: 8px; border: 2px solid #e5e7eb; margin-top: 20px; text-align: center; }
+    
+    .download-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
+    .download-link { background: #16a34a; color: white; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; display: inline-block; }
+    .download-link:hover { background: #15803d; }
+  </style>
+</head>
+<body>
+
+  <div class="tab-container">
+    <button id="btn-lp" class="tab-btn active" onclick="switchTab('lp')">LESSON PLAN</button>
+    <button id="btn-sow" class="tab-btn" onclick="switchTab('sow')">SCHEME OF WORK</button>
+  </div>
+
+  <div class="header">
+    <h1>VILUFUSHEE SCHOOL</h1>
+    <p id="header-subtitle">Lesson Plan Generator</p>
+  </div>
+
+  <div id="view-lp" class="view-section active">
+    <div class="control-panel">
+      <div>
+        <label>Academic Year</label>
+        <select id="year"></select> 
+      </div>
+      <div>
+        <label>Grade</label>
+        <select id="grade">
+          <option value="12">Grade 12</option>
+          <option value="11">Grade 11</option>
+          <option value="10">Grade 10</option>
+          <option value="9">Grade 9</option>
+          <option value="8">Grade 8</option>
+          <option value="7">Grade 7</option>
+          <option value="6">Grade 6</option>
+          <option value="5">Grade 5</option>
+          <option value="4">Grade 4</option>
+          <option value="3">Grade 3</option>
+          <option value="2">Grade 2</option>
+          <option value="1">Grade 1</option>
+        </select>
+      </div>
+      <div>
+        <label>Subject</label>
+        <select id="subject">
+          <option value="ISLAM">Islam</option>
+          <option value="QURAN">Quran</option>
+          <option value="DHIVEHI">Dhivehi</option>
+          <option value="QAUMIHYATH">Qaumihyath</option>
+          <option value="ARABIC">Arabic</option>
+        </select>
+      </div>
+      <div>
+        <label>Export Format</label>
+        <select id="format">
+          <option value="pdf">PDF</option>
+          <option value="word">Word (.docx)</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: end;">
+        <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Load Data</button>
+      </div>
+    </div>
+
+    <div id="planner-container"></div>
+
+    <div id="export-panel-container" class="export-panel" style="display:none;">
+      <h3 style="margin-top:0; color:var(--primary);">Export Options</h3>
+      <p style="font-size:14px; color:#555;">Choose which terms/weeks to include in the generated document:</p>
+      
+      <div style="margin-bottom: 20px;">
+        <button class="btn" style="width:auto; margin: 0 5px; background:#475569;" onclick="bulkSelect('T1')">Select All Term 1</button>
+        <button class="btn" style="width:auto; margin: 0 5px; background:#475569;" onclick="bulkSelect('T2')">Select All Term 2</button>
+        <button class="btn" style="width:auto; margin: 0 5px; background:#ef4444;" onclick="bulkSelect('NONE')">Deselect All</button>
+      </div>
+
+      <button class="btn" id="generateBtn" onclick="generateDocument()" style="padding: 15px; font-size: 16px;">
+        Generate VILUFUSHEE SCHOOL Lesson Plan
+      </button>
+    </div>
+    
+  </div>
+
+  <div id="view-sow" class="view-section">
+    <div style="text-align: center; padding: 40px; background: white; border-radius: 8px;">
+      <h2>Scheme of Work Portal</h2>
+      <p>Waiting for further instructions to build this section.</p>
+    </div>
+  </div>
+  
+  <div id="status"></div>
+
+  <script>
+    // ==========================================
+    // DEPLOYED APP URL
+    // ==========================================
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbykG86dWemxid_AynZcq-Ud3SsO_I97TEX1p7TqhfvKeigm6hgZ-BuiUJbIp4_ipAgB/exec"; 
+    
+    let globalOutcomes = [];
+
+    window.onload = function() {
+      const yearSelect = document.getElementById('year');
+      for (let i = 2026; i <= 2050; i++) {
+        let option = document.createElement('option');
+        option.value = i; option.text = i; yearSelect.appendChild(option);
+      }
+    };
+
+    function switchTab(tab) {
+      document.getElementById('btn-lp').classList.remove('active');
+      document.getElementById('btn-sow').classList.remove('active');
+      document.getElementById('btn-' + tab).classList.add('active');
+
+      document.getElementById('view-lp').classList.remove('active');
+      document.getElementById('view-sow').classList.remove('active');
+      document.getElementById('view-' + tab).classList.add('active');
+
+      document.getElementById('header-subtitle').innerText = tab === 'lp' ? "Lesson Plan Generator" : "Scheme of Work Generator";
+      setStatus("");
+    }
+
+    function setStatus(msg, type = '') {
+      const el = document.getElementById('status');
+      el.textContent = msg; el.className = type;
+    }
+
+    function resetPlannerUI() {
+      globalOutcomes = [];
+      document.getElementById('planner-container').innerHTML = "";
+      document.getElementById('export-panel-container').style.display = 'none';
+    }
+
+    async function loadData() {
+      resetPlannerUI(); 
+      
+      setStatus("Downloading curriculum data...", "");
+      document.getElementById('loadOutcomesBtn').disabled = true;
+      const subject = document.getElementById('subject').value;
+      const grade = document.getElementById('grade').value;
+
+      try {
+        const response = await fetch(`${WEB_APP_URL}?action=getOutcomes&subject=${subject}&grade=${grade}`);
+        const res = await response.json();
+        document.getElementById('loadOutcomesBtn').disabled = false;
+        
+        if (res.success) {
+          globalOutcomes = res.outcomes;
+          buildUI();
+          setStatus("Data loaded successfully. Please configure your weeks below.", "success");
+        } else {
+          setStatus("Error: " + res.error, "error");
+        }
+      } catch (err) {
+        document.getElementById('loadOutcomesBtn').disabled = false;
+        setStatus("Network Error: Make sure your Web App URL is correct.", "error");
+      }
+    }
+
+    function buildUI() {
+      const container = document.getElementById('planner-container');
+      container.innerHTML = `
+        <div class="terms-wrapper">
+          <div class="term-col" id="col-T1"><h2>TERM 1</h2></div>
+          <div class="term-col" id="col-T2"><h2>TERM 2</h2></div>
+        </div>
+      `;
+      
+      ['T1', 'T2'].forEach(term => {
+        const col = document.getElementById(`col-${term}`);
+        for(let w = 1; w <= 25; w++) {
+          let det = document.createElement('details');
+          det.className = 'week-details';
+          
+          det.innerHTML = `
+            <summary>
+               <span style="display:flex; align-items:center;">
+                  <span style="margin-right:8px; font-size:10px;">▶</span> Week ${w}
+               </span>
+               <label style="margin:0; font-size:13px; font-weight:normal;" onclick="event.stopPropagation()">
+                  <input type="checkbox" class="week-select-cb" data-term="${term}" data-week="W${w}"> Include in Export
+               </label>
+            </summary>
+            <div class="week-content" id="${term}-W${w}">
+               <div class="periods-list"></div>
+               <button class="btn" style="background:#475569; width:auto; padding:8px 15px; margin-top:10px;" onclick="addPeriod('${term}', 'W${w}')">+ Add Period</button>
+            </div>
+          `;
+          col.appendChild(det);
+        }
+      });
+      document.getElementById('export-panel-container').style.display = 'block';
+    }
+
+    function bulkSelect(action) {
+       const checkboxes = document.querySelectorAll('.week-select-cb');
+       checkboxes.forEach(cb => {
+          if (action === 'T1') {
+             cb.checked = (cb.dataset.term === 'T1');
+          } else if (action === 'T2') {
+             cb.checked = (cb.dataset.term === 'T2');
+          } else if (action === 'NONE') {
+             cb.checked = false;
+          }
+       });
+    }
+
+    function renumberPeriods(containerId) {
+       const container = document.getElementById(containerId);
+       if(!container) return;
+       const titles = container.querySelectorAll('.period-title');
+       titles.forEach((title, index) => {
+           title.innerText = `Period ${index + 1}`;
+       });
+    }
+
+    function addPeriod(term, weekKey) {
+      const weekContainer = document.getElementById(`${term}-${weekKey}`);
+      const listContainer = weekContainer.querySelector('.periods-list');
+      const periodCard = document.createElement('div');
+      periodCard.className = 'period-card';
+      
+      let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text.replace(/"/g, '&quot;')}">${o.text.substring(0,80)}...</option>`).join('');
+
+      const weekCheckbox = weekContainer.parentElement.querySelector('.week-select-cb');
+      if(weekCheckbox) weekCheckbox.checked = true;
+
+      periodCard.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #ddd; padding-bottom:10px;">
+           <strong style="color:var(--primary);" class="period-title">Period</strong>
+           <button style="color:red; font-weight:bold; border:none; background:none; cursor:pointer;" onclick="this.closest('.period-card').remove(); renumberPeriods('${term}-${weekKey}');">X Remove</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+           <div><label>Date</label><input type="date" class="p-date" /></div>
+           <div>
+             <label>Time</label>
+             <select class="p-time">
+                <option value="30">30</option>
+                <option value="35" selected>35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+             </select>
+           </div>
+        </div>
+        
+        <div>
+           <label>Add Outcome(s)</label>
+           <select style="width:100%; padding:8px; border:1px solid var(--primary);" onchange="selectOutcome(this)">
+              <option value="">-- Choose an Outcome --</option>
+              ${outcomeOptions}
+           </select>
+        </div>
+        <div class="selected-outcomes-container" style="margin-top:15px;"></div>
+      `;
+      
+      listContainer.appendChild(periodCard);
+      renumberPeriods(`${term}-${weekKey}`);
+    }
+
+    function selectOutcome(selectElement) {
+       const val = selectElement.value;
+       if(!val) return;
+       const outcome = globalOutcomes.find(o => o.text === val);
+       if(!outcome) return;
+       
+       const container = selectElement.parentElement.nextElementSibling;
+       const outCard = document.createElement('div');
+       outCard.className = 'outcome-block';
+       
+       outCard.dataset.outcomeText = outcome.text;
+       outCard.dataset.strand = outcome.strand;
+       outCard.dataset.substrand = outcome.substrand;
+       outCard.dataset.topic = outcome.topic; 
+       
+       let indicatorsHtml = outcome.indicators.map(ind => `
+          <label class="indicator-label">
+             <input type="checkbox" class="ind-check" value="${ind.replace(/"/g, '&quot;')}" checked>
+             <span>${ind}</span>
+          </label>
+       `).join('');
+       
+       outCard.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px; font-weight:bold;">
+             <span style="color:#1e3a8a;">${outcome.text}</span>
+             <button style="color:red; background:none; border:none; cursor:pointer;" title="Remove Outcome" onclick="this.parentElement.parentElement.remove()">X</button>
+          </div>
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #94a3b8;">
+             <strong>Indicators:</strong>
+             ${indicatorsHtml}
+          </div>
+       `;
+       
+       container.appendChild(outCard);
+       selectElement.value = ""; 
+    }
+
+    async function generateDocument() {
+      const checkedBoxes = document.querySelectorAll('.week-select-cb:checked');
+      if(checkedBoxes.length === 0) {
+         alert("Please select at least one week to export by checking the 'Include in Export' boxes.");
+         return;
+      }
+
+      setStatus("Generating your document(s)... Please wait.", "");
+      document.getElementById('generateBtn').disabled = true;
+
+      const year = document.getElementById('year').value;
+      const subject = document.getElementById('subject').value;
+      const grade = document.getElementById('grade').value;
+      const format = document.getElementById('format').value;
+      
+      let lpData = { T1: {}, T2: {} };
+      
+      document.querySelectorAll('.week-content').forEach(weekContent => {
+        const isSelected = weekContent.parentElement.querySelector('.week-select-cb').checked;
+        if (!isSelected) return;
+
+        let [term, weekKey] = weekContent.id.split('-');
+        let periods = weekContent.querySelectorAll('.period-card');
+        
+        if(periods.length > 0) {
+            periods.forEach((pCard, index) => {
+                let dateVal = pCard.querySelector('.p-date').value;
+                let pTime = pCard.querySelector('.p-time').value;
+                let pNum = (index + 1).toString(); 
+                
+                let outcomeBlocks = pCard.querySelectorAll('.outcome-block');
+                if(outcomeBlocks.length > 0) {
+                    if(!lpData[term][weekKey]) lpData[term][weekKey] = [];
+                    
+                    let combinedOutcomes = [];
+                    let combinedIndicators = [];
+                    let cStrand = ""; let cSub = ""; let cTopic = "";
+                    
+                    outcomeBlocks.forEach((ob, idx) => {
+                        combinedOutcomes.push(ob.dataset.outcomeText);
+                        if(idx === 0) {
+                            cStrand = ob.dataset.strand;
+                            cSub = ob.dataset.substrand;
+                            cTopic = ob.dataset.topic; 
+                        }
+                        ob.querySelectorAll('.ind-check:checked').forEach(chk => {
+                            combinedIndicators.push(chk.value);
+                        });
+                    });
+                    
+                    lpData[term][weekKey].push({
+                        date: dateVal,
+                        time: pTime, 
+                        period: pNum, 
+                        topic: cTopic, 
+                        outcome: combinedOutcomes.join('\n\n'),
+                        strand: cStrand,
+                        substrand: cSub,
+                        indicators: combinedIndicators
+                    });
+                }
+            });
+        }
+      });
+
+      const payload = { action: 'generateLP', year, subject, grade, format, lpData };
+
+      try {
+        const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await response.json();
+        document.getElementById('generateBtn').disabled = false;
+        
+        if (res.success && res.files && res.files.length > 0) {
+          setStatus("Success! Download your files below:", "success");
+          
+          let downloadButtonsHtml = `<div class="download-grid">`;
+          res.files.forEach(f => {
+             downloadButtonsHtml += `<a href="${f.url}" target="_blank" class="download-link">📄 Download ${f.label}</a>`;
+          });
+          downloadButtonsHtml += `</div>`;
+          
+          document.getElementById('status').innerHTML = downloadButtonsHtml;
+        } else {
+          setStatus("Error: " + (res.error || "No files were created."), "error");
+        }
+      } catch (err) {
+        document.getElementById('generateBtn').disabled = false;
+        setStatus("Network Error: Failed to connect to the backend.", "error");
+      }
+    }
+  </script>
+</body>
+</html>
