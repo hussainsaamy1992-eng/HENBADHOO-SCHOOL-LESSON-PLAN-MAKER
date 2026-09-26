@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>DHANBIDHOO SCHOOL - Lesson Plan Portal</title>
+  <title>HENBADHOO SCHOOL - Lesson Plan Portal</title>
   <style>
     :root {
       --primary: #1e3a8a;
@@ -32,7 +32,7 @@
       text-align: center; background: var(--primary); color: white;
       padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
+    .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
     .header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
     
     .control-panel {
@@ -103,8 +103,8 @@
   </div>
 
   <div class="header">
-    <h1>DHANBIDHOO SCHOOL</h1>
-    <p id="header-subtitle">Lesson Plan Generator</p>
+    <h1>HENBADHOO SCHOOL</h1>
+    <p id="header-subtitle">Lesson Plan Generator (Google Sheet Backend)</p>
   </div>
 
   <div id="view-lp" class="view-section active">
@@ -144,7 +144,7 @@
         <label>Export Format</label>
         <select id="format">
           <option value="pdf">PDF</option>
-          <option value="word">Word (.docx)</option>
+          <option value="excel">Excel (.xlsx)</option>
         </select>
       </div>
       <div style="display: flex; align-items: end;">
@@ -165,7 +165,7 @@
       </div>
 
       <button class="btn" id="generateBtn" onclick="generateDocument()" style="padding: 15px; font-size: 16px;">
-        Generate DHANBIDHOO SCHOOL Lesson Plan
+        Generate HENBADHOO SCHOOL Lesson Plan
       </button>
     </div>
     
@@ -181,7 +181,7 @@
   <div id="status"></div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfVRbxMLD4QAmHIR0N7wNyn-Owz4B0FRGxi5Rm2rSrJcXuhwI5e4jghwonEXvJOuF2/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwwha0uhw7i9sUhPnvaeqRTBtCMZUvaR3BI8Nstc-kAywIu1ZPgTf7vI_OuGqlbZlLE/exec"; 
     
     let globalOutcomes = [];
 
@@ -202,7 +202,7 @@
       document.getElementById('view-sow').classList.remove('active');
       document.getElementById('view-' + tab).classList.add('active');
 
-      document.getElementById('header-subtitle').innerText = tab === 'lp' ? "Lesson Plan Generator" : "Scheme of Work Generator";
+      document.getElementById('header-subtitle').innerText = tab === 'lp' ? "Lesson Plan Generator (Google Sheet Backend)" : "Scheme of Work Generator";
       setStatus("");
     }
 
@@ -339,7 +339,6 @@
         </div>
         <div class="selected-outcomes-container" style="margin-top:15px;"></div>
 
-        <!-- AI GENERATED BOX -->
         <div class="activity-box">
            <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Teaching Aids (Dhivehi)</label>
            <textarea class="p-teaching-aids" rows="2" placeholder="AI Teaching Aids will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
@@ -471,7 +470,7 @@
          return;
       }
 
-      setStatus("Generating your document(s)... Please wait.", "");
+      setStatus("Generating HENBADHOO SCHOOL document(s)... Please wait.", "");
       document.getElementById('generateBtn').disabled = true;
 
       const year = document.getElementById('year').value;
@@ -544,10 +543,10 @@
       try {
         const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
         const res = await response.json();
-        document.getElementById('generateBtn').disabled = false;
+        document.getElementById('generatfeBtn').disabled = false;
         
         if (res.success && res.files && res.files.length > 0) {
-          setStatus("Success! Download your files below:", "success");
+          setStatus("Success! Download your generated Henbadhoo School files below:", "success");
           
           let downloadButtonsHtml = `<div class="download-grid">`;
           res.files.forEach(f => {
@@ -561,7 +560,7 @@
         }
       } catch (err) {
         document.getElementById('generateBtn').disabled = false;
-        setStatus("Network Error: Failed to connect to the backend.", "error");
+        setStatus("Network Error: Failed to connect to the backend Web App.", "error");
       }
     }
   </script>
