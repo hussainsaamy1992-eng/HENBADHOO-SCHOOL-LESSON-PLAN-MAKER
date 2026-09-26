@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>VILUFUSHEE SCHOOL - Lesson Plan Portal</title>
+  <title>DHANBIDHOO SCHOOL - Lesson Plan Portal</title>
   <style>
     :root {
       --primary: #1e3a8a;
@@ -42,8 +42,9 @@
     }
     
     label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
-    select, input[type="text"], input[type="date"] {
+    select, input[type="text"], input[type="date"], textarea {
       width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+      font-family: inherit;
     }
     
     .btn {
@@ -53,6 +54,14 @@
     }
     .btn:hover { opacity: 0.9; }
     .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    .btn-ai {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white; border: none; padding: 10px 16px; border-radius: 6px;
+      cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 8px;
+    }
+    .btn-ai:hover { opacity: 0.9; }
+    .btn-ai:disabled { background: #9ca3af; cursor: not-allowed; }
     
     #status { margin-top: 15px; font-weight: bold; text-align: center; }
     .success { color: #16a34a; }
@@ -74,6 +83,11 @@
     .outcome-block { background: #eff6ff; padding: 10px; border-left: 4px solid #3b82f6; margin-bottom: 10px; border-radius: 4px; }
     .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
     
+    .activity-box {
+      margin-top: 15px; background: #f0fdf4; border: 1px solid #bbf7d0;
+      padding: 12px; border-radius: 6px;
+    }
+
     .export-panel { background: white; padding: 20px; border-radius: 8px; border: 2px solid #e5e7eb; margin-top: 20px; text-align: center; }
     
     .download-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
@@ -89,7 +103,7 @@
   </div>
 
   <div class="header">
-    <h1>VILUFUSHEE SCHOOL</h1>
+    <h1>DHANBIDHOO SCHOOL</h1>
     <p id="header-subtitle">Lesson Plan Generator</p>
   </div>
 
@@ -151,7 +165,7 @@
       </div>
 
       <button class="btn" id="generateBtn" onclick="generateDocument()" style="padding: 15px; font-size: 16px;">
-        Generate VILUFUSHEE SCHOOL Lesson Plan
+        Generate DHANBIDHOO SCHOOL Lesson Plan
       </button>
     </div>
     
@@ -167,10 +181,7 @@
   <div id="status"></div>
 
   <script>
-    // ==========================================
-    // DEPLOYED APP URL
-    // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbykG86dWemxid_AynZcq-Ud3SsO_I97TEX1p7TqhfvKeigm6hgZ-BuiUJbIp4_ipAgB/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfVRbxMLD4QAmHIR0N7wNyn-Owz4B0FRGxi5Rm2rSrJcXuhwI5e4jghwonEXvJOuF2/exec"; 
     
     let globalOutcomes = [];
 
@@ -327,6 +338,28 @@
            </select>
         </div>
         <div class="selected-outcomes-container" style="margin-top:15px;"></div>
+
+        <!-- AI GENERATED BOX -->
+        <div class="activity-box">
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Teaching Aids (Dhivehi)</label>
+           <textarea class="p-teaching-aids" rows="2" placeholder="AI Teaching Aids will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Learning Intention (Dhivehi)</label>
+           <textarea class="p-li" rows="2" placeholder="AI Learning Intention will appear here..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Success Criteria (Dhivehi)</label>
+           <textarea class="p-sc" rows="2" placeholder="AI Success Criteria will appear here..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Classroom Activity (Dhivehi)</label>
+           <textarea class="p-activity" rows="2" placeholder="AI activity will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Lesson Reflection (Dhivehi)</label>
+           <textarea class="p-reflection" rows="2" placeholder="AI reflection will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <button type="button" class="btn-ai" onclick="generateAIActivityForPeriod(this)">
+             ✨ Generate AI Details (TA, LI, SC, Activity & RF)
+           </button>
+        </div>
       `;
       
       listContainer.appendChild(periodCard);
@@ -351,13 +384,13 @@
        let indicatorsHtml = outcome.indicators.map(ind => `
           <label class="indicator-label">
              <input type="checkbox" class="ind-check" value="${ind.replace(/"/g, '&quot;')}" checked>
-             <span>${ind}</span>
+             <span style="direction:rtl; text-align:right;">${ind}</span>
           </label>
        `).join('');
        
        outCard.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px; font-weight:bold;">
-             <span style="color:#1e3a8a;">${outcome.text}</span>
+             <span style="color:#1e3a8a; direction:rtl; text-align:right;">${outcome.text}</span>
              <button style="color:red; background:none; border:none; cursor:pointer;" title="Remove Outcome" onclick="this.parentElement.parentElement.remove()">X</button>
           </div>
           <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #94a3b8;">
@@ -368,6 +401,67 @@
        
        container.appendChild(outCard);
        selectElement.value = ""; 
+    }
+
+    async function generateAIActivityForPeriod(btn) {
+      const card = btn.closest('.period-card');
+      const outcomeBlocks = card.querySelectorAll('.outcome-block');
+      const taTextarea = card.querySelector('.p-teaching-aids');
+      const liTextarea = card.querySelector('.p-li');
+      const scTextarea = card.querySelector('.p-sc');
+      const actTextarea = card.querySelector('.p-activity');
+      const rfTextarea = card.querySelector('.p-reflection');
+
+      if (outcomeBlocks.length === 0) {
+        alert("Please select at least one Outcome before generating AI details.");
+        return;
+      }
+
+      let selectedOutcomes = [];
+      let selectedIndicators = [];
+
+      outcomeBlocks.forEach(ob => {
+        selectedOutcomes.push(ob.dataset.outcomeText);
+        ob.querySelectorAll('.ind-check:checked').forEach(chk => {
+          selectedIndicators.push(chk.value);
+        });
+      });
+
+      const subject = document.getElementById('subject').value;
+      const grade = document.getElementById('grade').value;
+
+      btn.disabled = true;
+      btn.innerText = "⏳ Generating AI Details...";
+
+      try {
+        const payload = {
+          action: 'generateAIActivity',
+          outcome: selectedOutcomes.join('; '),
+          indicators: selectedIndicators,
+          subject: subject,
+          grade: grade
+        };
+
+        const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await response.json();
+
+        btn.disabled = false;
+        btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & RF)";
+
+        if (res.success) {
+          if (taTextarea && res.teachingAids) taTextarea.value = res.teachingAids;
+          if (liTextarea && res.learningIntention) liTextarea.value = res.learningIntention;
+          if (scTextarea && res.successCriteria) scTextarea.value = res.successCriteria;
+          if (actTextarea && res.activity) actTextarea.value = res.activity;
+          if (rfTextarea && res.reflection) rfTextarea.value = res.reflection;
+        } else {
+          alert("Error: " + (res.error || "Could not generate AI content. Ensure your Gemini API Key is set in Code.gs."));
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & RF)";
+        alert("Network Error: Failed to generate AI content.");
+      }
     }
 
     async function generateDocument() {
@@ -398,6 +492,11 @@
             periods.forEach((pCard, index) => {
                 let dateVal = pCard.querySelector('.p-date').value;
                 let pTime = pCard.querySelector('.p-time').value;
+                let teachingAidsVal = pCard.querySelector('.p-teaching-aids') ? pCard.querySelector('.p-teaching-aids').value : "";
+                let customLiVal = pCard.querySelector('.p-li') ? pCard.querySelector('.p-li').value : "";
+                let customScVal = pCard.querySelector('.p-sc') ? pCard.querySelector('.p-sc').value : "";
+                let customActVal = pCard.querySelector('.p-activity') ? pCard.querySelector('.p-activity').value : "";
+                let customRfVal = pCard.querySelector('.p-reflection') ? pCard.querySelector('.p-reflection').value : "";
                 let pNum = (index + 1).toString(); 
                 
                 let outcomeBlocks = pCard.querySelectorAll('.outcome-block');
@@ -428,7 +527,12 @@
                         outcome: combinedOutcomes.join('\n\n'),
                         strand: cStrand,
                         substrand: cSub,
-                        indicators: combinedIndicators
+                        indicators: combinedIndicators,
+                        teachingAids: teachingAidsVal,
+                        customLI: customLiVal,         
+                        customSC: customScVal,         
+                        customActivity: customActVal,
+                        reflection: customRfVal
                     });
                 }
             });
