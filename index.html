@@ -65,7 +65,7 @@
     
     #status { margin-top: 15px; font-weight: bold; text-align: center; }
     .success { color: #16a34a; }
-    .error { color: #dc2626; }
+    .error { color: #dc2626; word-break: break-word; }
     
     .view-section { display: none; }
     .view-section.active { display: block; }
@@ -181,7 +181,7 @@
   <div id="status"></div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7gvBkasBphQVWtx8w0dDA6yH_1r1K4rIGAnp6YuYMnonZCFJ4rq2By5flyxoeyOoL/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdO70bECoXpbzK1An-D1sZrIygU2NaSV-2ngyXWsOv1x8kCweV1L6xGQ31-2Lx5mgj/exec"; 
     
     let globalOutcomes = [];
 
@@ -227,9 +227,15 @@
 
       try {
         const response = await fetch(`${WEB_APP_URL}?action=getOutcomes&subject=${subject}&grade=${grade}`);
-        const res = await response.json();
+        const rawText = await response.text();
         document.getElementById('loadOutcomesBtn').disabled = false;
         
+        let res;
+        try { res = JSON.parse(rawText); } catch(e) {
+          setStatus("Server Error: " + rawText.substring(0, 150), "error");
+          return;
+        }
+
         if (res.success) {
           globalOutcomes = res.outcomes;
           buildUI();
@@ -239,7 +245,7 @@
         }
       } catch (err) {
         document.getElementById('loadOutcomesBtn').disabled = false;
-        setStatus("Network Error: Make sure your Web App URL is correct.", "error");
+        setStatus("Network Error: Could not connect to Web App.", "error");
       }
     }
 
@@ -281,13 +287,9 @@
     function bulkSelect(action) {
        const checkboxes = document.querySelectorAll('.week-select-cb');
        checkboxes.forEach(cb => {
-          if (action === 'T1') {
-             cb.checked = (cb.dataset.term === 'T1');
-          } else if (action === 'T2') {
-             cb.checked = (cb.dataset.term === 'T2');
-          } else if (action === 'NONE') {
-             cb.checked = false;
-          }
+          if (action === 'T1') cb.checked = (cb.dataset.term === 'T1');
+          else if (action === 'T2') cb.checked = (cb.dataset.term === 'T2');
+          else if (action === 'NONE') cb.checked = false;
        });
     }
 
@@ -442,10 +444,15 @@
         };
 
         const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const res = await response.json();
-
+        const rawText = await response.text();
         btn.disabled = false;
         btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & RF)";
+
+        let res;
+        try { res = JSON.parse(rawText); } catch(e) {
+          alert("Server Error: " + rawText.substring(0, 150));
+          return;
+        }
 
         if (res.success) {
           if (taTextarea && res.teachingAids) taTextarea.value = res.teachingAids;
@@ -542,9 +549,15 @@
 
       try {
         const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const res = await response.json();
-        document.getElementById('generatfeBtn').disabled = false;
-        
+        const rawText = await response.text();
+        document.getElementById('generateBtn').disabled = false;
+
+        let res;
+        try { res = JSON.parse(rawText); } catch(jsonErr) {
+          setStatus("Server Error: " + rawText.substring(0, 200), "error");
+          return;
+        }
+
         if (res.success && res.files && res.files.length > 0) {
           setStatus("Success! Download your generated Henbadhoo School files below:", "success");
           
@@ -560,7 +573,7 @@
         }
       } catch (err) {
         document.getElementById('generateBtn').disabled = false;
-        setStatus("Network Error: Failed to connect to the backend Web App.", "error");
+        setStatus("Network Error: Could not connect to Web App.", "error");
       }
     }
   </script>
