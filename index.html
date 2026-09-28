@@ -83,6 +83,11 @@
     .outcome-block { background: #eff6ff; padding: 10px; border-left: 4px solid #3b82f6; margin-bottom: 10px; border-radius: 4px; }
     .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
     
+    .section-box {
+      margin-top: 10px; background: #f8fafc; border: 1px solid #e2e8f0;
+      padding: 10px; border-radius: 6px; margin-bottom: 10px;
+    }
+
     .activity-box {
       margin-top: 15px; background: #f0fdf4; border: 1px solid #bbf7d0;
       padding: 12px; border-radius: 6px;
@@ -93,6 +98,17 @@
     .download-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
     .download-link { background: #16a34a; color: white; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; display: inline-block; }
     .download-link:hover { background: #15803d; }
+
+    /* New CSS specifically for the Checkboxes */
+    .checklist-grid {
+      display: grid; grid-template-columns: 1fr; gap: 6px; direction: rtl; text-align: right; margin-top: 5px;
+    }
+    .checklist-item {
+      display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 14px; cursor: pointer; flex-direction: row-reverse;
+    }
+    .checklist-item input {
+      width: 16px; height: 16px; margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -181,9 +197,30 @@
   <div id="status"></div>
 
   <script>
+    // MAKE SURE YOUR WEB APP URL IS CORRECT HERE:
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzNGlkQhWXukFluMa1--qmIs9be1Pi06BCEwnIxboadRKIZe-7KTmBEL6MIz52N7M-_/exec"; 
     
     let globalOutcomes = [];
+
+    // Defining the 8 Key Competencies
+    const KEY_COMPETENCIES_LIST = [
+      "އިސްލާމްދީނާ އެއްގޮތަށް ޢަމަލުކުރުން",
+      "ނަފުސު ދެނެގަތުމާއި ތަންޒީމުކުރުން",
+      "ބިނާކުރަނިވި އަދި އުފެއްދުންތެރިގޮތެއްގައި ވިސްނުން",
+      "އެހެން މީހުންނާ ގުޅިގެން އުޅުން",
+      "ދޭހަވުމާއި ދޭހަކޮށްދިނުން",
+      "ދުުޅަހެޔޮ ދިރިއުޅުމެއް އުޅުން",
+      "ދެމެހެއްޓެނިވި ތަރައްޤީއަށް ޢަމަލުކުރުން",
+      "ޓެކްނޮލޮޖީއާއި މީޑިއާ ބޭނުންކުރުން"
+    ];
+
+    // Defining the 4 Values
+    const VALUES_LIST = [
+      "ޢާއިލާއާއި ދޭދޭފަރުދުންގެ މެދުގައި ހުންނަ އަގުތައް",
+      "އަމިއްލަ ނަފްސާ ގުޅިގެން އަންނަ އަގުތައް",
+      "ދިރިއުޅޭ މުޖުތަމަޢާއި ބަވަނަވެފައިވާ މުޖުތަމަޢާގުޅޭ އަގުތައް",
+      "ދިރިއުޅޭ ވެއްޓާގުޅޭ އަގުތައް"
+    ];
 
     window.onload = function() {
       const yearSelect = document.getElementById('year');
@@ -310,6 +347,22 @@
       
       let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text.replace(/"/g, '&quot;')}">${o.text.substring(0,80)}...</option>`).join('');
 
+      // Create Key Competencies Checkboxes
+      let kcOptionsHtml = KEY_COMPETENCIES_LIST.map((kc, idx) => `
+        <label class="checklist-item">
+          <input type="checkbox" class="kc-check" value="${kc.replace(/"/g, '&quot;')}" checked>
+          <span>${kc}</span>
+        </label>
+      `).join('');
+
+      // Create Values Checkboxes
+      let valuesOptionsHtml = VALUES_LIST.map((val, idx) => `
+        <label class="checklist-item">
+          <input type="checkbox" class="val-check" value="${val.replace(/"/g, '&quot;')}" checked>
+          <span>${val}</span>
+        </label>
+      `).join('');
+
       const weekCheckbox = weekContainer.parentElement.querySelector('.week-select-cb');
       if(weekCheckbox) weekCheckbox.checked = true;
 
@@ -331,8 +384,20 @@
              </select>
            </div>
         </div>
+
+        <!-- NEW: Key Competencies Section -->
+        <div class="section-box">
+           <label style="color:var(--primary); font-weight:bold; display:block; direction:rtl; text-align:right;">ކީ ކޮމްޕިޓެންސީތައް (Key Competencies)</label>
+           <div class="checklist-grid">${kcOptionsHtml}</div>
+        </div>
+
+        <!-- NEW: Values Section -->
+        <div class="section-box">
+           <label style="color:var(--primary); font-weight:bold; display:block; direction:rtl; text-align:right;">އަގުތައް (Values)</label>
+           <div class="checklist-grid">${valuesOptionsHtml}</div>
+        </div>
         
-        <div>
+        <div style="margin-top:10px;">
            <label>Add Outcome(s)</label>
            <select style="width:100%; padding:8px; border:1px solid var(--primary);" onchange="selectOutcome(this)">
               <option value="">-- Choose an Outcome --</option>
@@ -354,11 +419,11 @@
            <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Classroom Activity (Dhivehi)</label>
            <textarea class="p-activity" rows="2" placeholder="AI activity will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
 
-           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Lesson Reflection (Dhivehi)</label>
-           <textarea class="p-reflection" rows="2" placeholder="AI reflection will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Lesson Closure & Reflection (Dhivehi)</label>
+           <textarea class="p-reflection" rows="2" placeholder="Lesson closure summary and AI reflection will appear here..." style="width:100%; font-family:'Faruma', 'Thaana', 'MV Boli', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
 
            <button type="button" class="btn-ai" onclick="generateAIActivityForPeriod(this)">
-             ✨ Generate AI Details (TA, LI, SC, Activity & RF)
+             ✨ Generate AI Details (TA, LI, SC, Activity & Lesson Closure)
            </button>
         </div>
       `;
@@ -383,9 +448,9 @@
        outCard.dataset.topic = outcome.topic; 
        
        let indicatorsHtml = outcome.indicators.map(ind => `
-          <label class="indicator-label">
+          <label class="indicator-label" style="direction:rtl; text-align:right; justify-content:flex-start; flex-direction:row-reverse;">
              <input type="checkbox" class="ind-check" value="${ind.replace(/"/g, '&quot;')}" checked>
-             <span style="direction:rtl; text-align:right;">${ind}</span>
+             <span>${ind}</span>
           </label>
        `).join('');
        
@@ -446,7 +511,7 @@
         const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
         const rawText = await response.text();
         btn.disabled = false;
-        btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & RF)";
+        btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & Lesson Closure)";
 
         let res;
         try { res = JSON.parse(rawText); } catch(e) {
@@ -465,7 +530,7 @@
         }
       } catch (err) {
         btn.disabled = false;
-        btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & RF)";
+        btn.innerText = "✨ Generate AI Details (TA, LI, SC, Activity & Lesson Closure)";
         alert("Network Error: Failed to generate AI content.");
       }
     }
@@ -504,6 +569,18 @@
                 let customActVal = pCard.querySelector('.p-activity') ? pCard.querySelector('.p-activity').value : "";
                 let customRfVal = pCard.querySelector('.p-reflection') ? pCard.querySelector('.p-reflection').value : "";
                 let pNum = (index + 1).toString(); 
+
+                // Collect checked Key Competencies
+                let selectedKc = [];
+                pCard.querySelectorAll('.kc-check:checked').forEach(chk => {
+                  selectedKc.push(chk.value);
+                });
+
+                // Collect checked Values
+                let selectedValues = [];
+                pCard.querySelectorAll('.val-check:checked').forEach(chk => {
+                  selectedValues.push(chk.value);
+                });
                 
                 let outcomeBlocks = pCard.querySelectorAll('.outcome-block');
                 if(outcomeBlocks.length > 0) {
@@ -538,7 +615,9 @@
                         customLI: customLiVal,         
                         customSC: customScVal,         
                         customActivity: customActVal,
-                        reflection: customRfVal
+                        reflection: customRfVal,
+                        kc: selectedKc,      // Sent to backend
+                        values: selectedValues // Sent to backend
                     });
                 }
             });
